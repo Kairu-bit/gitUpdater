@@ -11,12 +11,11 @@ const reset = '\x1b[0m';
 try {
   console.log(getTimeStamp() + info + `Checking for updates...`);
 
-  // Check for changes in `setup.sh`
   let hasChanges = false;
-  const diffSetup = await git.diff(['--name-only', '--', 'setup.sh']);
-  console.log("Diff setup.sh:", diffSetup);
-  if (diffSetup.includes('setup.sh')) {
-    console.log(getTimeStamp() + info + 'Local changes detected in setup.sh. Stashing...');
+  const diffSetup = await git.diff(['--name-only', '--', 'config.json']);
+  console.log("Diff config.json:", diffSetup);
+  if (diffSetup.includes('config.json')) {
+    console.log(getTimeStamp() + info + 'Local changes detected in config.json. Stashing...');
     await git.stash();
     hasChanges = true;
   }
