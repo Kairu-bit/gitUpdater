@@ -15,7 +15,7 @@ try {
   const status = await git.pull();
   console.log(`Status:`, status)
 
-  if (status.summary.changes === '0') {
+  if (status.summary.changes === 0) {
     console.log(getTimeStamp() + info + `No updates found.`);
   } else {
     // Get the latest commit message
