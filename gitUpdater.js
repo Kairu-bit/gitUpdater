@@ -24,7 +24,7 @@ try {
   const diffIndex = await git.diff(['--name-only', '--', 'index.js']);
   if (diffIndex.includes('index.js')) {
     console.log(getTimeStamp() + info + 'Local changes detected in index.js');
-    process.exit(1)
+    hasChanges = true;
   }
 
   // Perform git pull
@@ -40,6 +40,7 @@ try {
     // Reapply stashed changes if any
     if (hasChanges) {
       try {
+        console.log("Pop");
         const res = await git.stash(['pop']);
         console.log(res);
       } catch (err) {
