@@ -1,5 +1,5 @@
 import simpleGit from 'simple-git';
- 
+  
 const git = simpleGit();
 const getTimeStamp = () => `[${new Date().toISOString()}] `;
 const info = '[INFO] ';
