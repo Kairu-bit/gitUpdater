@@ -14,6 +14,7 @@ try {
   // Check for changes in `setup.sh`
   let hasChanges = false;
   const diffSetup = await git.diff(['--name-only', '--', 'setup.sh']);
+  console.log("Diff setup.sh:", diffSetup);
   if (diffSetup.includes('setup.sh')) {
     console.log(getTimeStamp() + info + 'Local changes detected in setup.sh. Stashing...');
     await git.stash();
@@ -22,9 +23,11 @@ try {
 
   // Check for changes in `index.js`
   const diffIndex = await git.diff(['--name-only', '--', 'index.js']);
+  console.log("Diff index.js:", diffIndex);
   if (diffIndex.includes('index.js')) {
-    console.log(getTimeStamp() + info + 'Local changes detected in index.js. Please commit or stash your changes before updating.');
-    process.exit(1);
+    console.log(getTimeStamp() + info + 'Local changes detected in index.js. Stashing...');
+    await git.stash();
+    hasChanges = true
   }
 
   // Perform git pull
