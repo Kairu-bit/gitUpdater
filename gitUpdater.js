@@ -1,5 +1,4 @@
-import git from "simple-git";
-import path from "path";
+import simpleGit from "simple-git";
 
 const repoPath = process.cwd();
 
