@@ -1,7 +1,4 @@
-
 import simpleGit from 'simple-git';
-import fs from 'fs/promises';
-import path from 'path';
 
 const git = simpleGit();
 const getTimeStamp = () => `[${new Date().toISOString()}] `;
@@ -11,32 +8,23 @@ const yellow = '\x1b[33m';
 const green = '\x1b[32m';
 const reset = '\x1b[0m';
 
-const backupFilePath = path.resolve('config.json.backup'); // Path for backup file
-
 try {
   console.log(getTimeStamp() + info + `Checking for updates...`);
 
+  // Check for changes in `setup.sh`
   let hasChanges = false;
-  let configModified = false;
-
-  // Check for changes in `config.json`
-  const diffSetup = await git.diff(['--name-only', '--', 'config.json']);
-  console.log("Diff config.json:", diffSetup);
-  if (diffSetup.includes('config.json')) {
-    console.log(getTimeStamp() + info + 'Local changes detected in config.json. Backing up...');
-    await fs.copyFile('config.json', backupFilePath); // Backup the modified config.json
-    await git.stash(); // Stash the changes
+  const diffSetup = await git.diff(['--name-only', '--', 'setup.sh']);
+  if (diffSetup.includes('setup.sh')) {
+    console.log(getTimeStamp() + info + 'Local changes detected in setup.sh. Stashing...');
+    await git.stash();
     hasChanges = true;
-    configModified = true;
   }
 
   // Check for changes in `index.js`
   const diffIndex = await git.diff(['--name-only', '--', 'index.js']);
-  console.log("Diff index.js:", diffIndex);
   if (diffIndex.includes('index.js')) {
-    console.log(getTimeStamp() + info + 'Local changes detected in index.js. Stashing...');
-    await git.stash();
-    hasChanges = true;
+    console.log(getTimeStamp() + info + 'Local changes detected in index.js');
+    process.exit(1)
   }
 
   // Perform git pull
@@ -52,19 +40,12 @@ try {
     // Reapply stashed changes if any
     if (hasChanges) {
       try {
-        await git.stash(['pop']);
+        const res = await git.stash(['pop']);
+        console.log(res);
       } catch (err) {
         console.log(getTimeStamp() + error + 'Failed to apply stashed changes.');
         console.log(getTimeStamp() + error + err.message);
       }
-    }
-
-    // Restore the modified `config.json` from backup
-    if (configModified) {
-      console.log(getTimeStamp() + info + 'Restoring modified config.json from backup...');
-      await fs.copyFile(backupFilePath, 'config.json');
-      await fs.unlink(backupFilePath); // Remove the backup file
-      console.log(getTimeStamp() + info + 'Restored modified config.json successfully.');
     }
 
     process.exit();
